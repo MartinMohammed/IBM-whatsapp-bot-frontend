@@ -44,12 +44,6 @@
     padding: 0 !important;
   }
 
-  /* .avatar-icon img {
-    border-radius: 50%;
-    height: 49px;
-    width: 49px;
-  } */
-
   .sideBar-main {
     padding: 0 !important;
   }
@@ -92,10 +86,7 @@
       text-align: left;
       padding: 0 8px !important;
     }
-    /* .avatar-icon img {
-      height: 55px;
-      width: 55px;
-    } */
+
     .sideBar-main {
       padding: 0 !important;
     }

@@ -18,9 +18,6 @@
     iconType="dot-icon"
     iconSize="default"
   />
-  <!-- <div class="col-sm-1 col-xs-1 heading-dot pull-right">
-      <i class="fa fa-ellipsis-v fa-2x pull-right" aria-hidden="true" />
-    </div> -->
 
   <Icon
     jsSelector="compose-open"
@@ -30,9 +27,6 @@
     pullRight={true}
     iconType="comment-icon"
   />
-  <!-- <div class="col-sm-2 col-xs-2 heading-compose pull-right">
-      <i class="fa fa-comments fa-2x pull-right" aria-hidden="true" />
-    </div> -->
 </div>
 
 <style>
@@ -50,12 +44,6 @@
     cursor: pointer;
   }
 
-  /* .heading-avatar-icon img {
-    border-radius: 50%;
-    height: 40px;
-    width: 40px;
-  } */
-
   @media screen and (max-width: 700px) {
     .heading {
       height: 70px;
@@ -65,9 +53,5 @@
     .heading-avatar {
       padding: 0 !important;
     }
-    /* .heading-avatar-icon img {
-      height: 50px;
-      width: 50px;
-    } */
   }
 </style>

@@ -15,9 +15,6 @@
       src="https://bootdey.com/img/Content/avatar/avatar6.png"
       size="small"
     />
-    <!-- <div class="heading-avatar-icon">
-          <img src="https://bootdey.com/img/Content/avatar/avatar6.png" alt="" />
-        </div> -->
   </div>
   <div class="col-sm-8 col-xs-7 heading-name">
     <a class="heading-name-meta">{chatUsername} </a>
@@ -71,38 +68,14 @@
     font-size: 12px;
     color: #93918f;
   }
-  /* 
-  .heading-dot {
-    padding: 0;
-    margin-left: 10px;
-  }
-
-  .heading-dot i {
-    text-align: right;
-    padding: 5px;
-    color: #93918f;
-    cursor: pointer;
-  } */
 
   @media screen and (max-width: 700px) {
     .heading {
       height: 70px;
       background-color: #009688;
     }
-    /* .fa-2x {
-      font-size: 2.3em !important;
-    } */
     .heading-avatar {
       padding: 0 !important;
     }
-
-    /* .heading-dot {
-      padding: 5px !important;
-      margin-left: 10px !important;
-    }
-    .heading-dot i {
-      color: #fff;
-      cursor: pointer;
-    } */
   }
 </style>
