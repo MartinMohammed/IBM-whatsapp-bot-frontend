@@ -1,5 +1,18 @@
+<script lang="ts">
+  import { chatScreenDataStore } from "../stores";
+  const { messageInputValue } = chatScreenDataStore;
+
+  // Keep track of the input field value
+  let messageInput: string = "";
+</script>
+
 <div class="col-sm-9 col-xs-9 textarea-field">
-  <textarea class="form-control" rows="1" id="comment" />
+  <textarea
+    class="form-control"
+    rows="1"
+    id="comment"
+    bind:value={$messageInputValue}
+  />
 </div>
 
 <style>

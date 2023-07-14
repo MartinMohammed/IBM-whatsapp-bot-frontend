@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ChatScreen from "./lib/screens/chatScreens/ChatScreen.svelte";
+  import ChatScreen from "./lib/screens/chatScreen/ChatScreen.svelte";
 </script>
 
 <svelte:head>
@@ -26,4 +26,5 @@
 </svelte:head>
 
 <!-- Something like a router or co.  -->
+
 <ChatScreen />

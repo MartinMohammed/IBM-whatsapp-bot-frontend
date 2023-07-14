@@ -2,9 +2,8 @@
   import HeadingSideTwo from "./ComposeHeading.svelte";
   import SearchBox from "../../../../components/SearchBox.svelte";
   import ContactItem from "../ContactItem.svelte";
-  import dataStore from "../../../../stores";
-
-  const allContacts = dataStore.allContacts;
+  import { chatScreenDataStore } from "../../../../stores";
+  const { users } = chatScreenDataStore;
 </script>
 
 <div class="side-two">
@@ -14,8 +13,8 @@
   <SearchBox placeholderText={"Search People"} hasIcon={true} />
 
   <div class="row compose-sideBar">
-    {#each $allContacts as contact (contact)}
-      <ContactItem name="John Doe" time="18:18" avatarIcon={contact} />
+    {#each Object.values($users) as user (user.wa_id)}
+      <ContactItem name={user.name} time="18:18" avatarIcon={1} />
     {/each}
   </div>
 </div>

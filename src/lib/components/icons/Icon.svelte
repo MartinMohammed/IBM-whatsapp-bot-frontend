@@ -33,6 +33,8 @@
 
   /** Determines if the icon is aligned to the right */
   export let pullRight: boolean = false;
+
+  export let onIconClick: (e: Event) => void = (e: Event) => {};
 </script>
 
 <div
@@ -46,6 +48,7 @@
       pullRight ? "pull-right" : ""
     }`}
     aria-hidden={ariaHidden}
+    on:click={onIconClick}
   />
 </div>
 

@@ -3,9 +3,10 @@
   import SearchBox from "../../../../components/SearchBox.svelte";
   import ContactItem from "../ContactItem.svelte";
 
-  import dataStore from "../../../../stores";
+  import { chatScreenDataStore } from "../../../../stores";
   // TODO: filter only those contacts that has property 'isRecent' to true;
-  const recentContactsStore = dataStore.allContacts;
+
+  const { users } = chatScreenDataStore;
 </script>
 
 <div class="side-one">
@@ -14,8 +15,8 @@
   <SearchBox placeholderText="Search" hasIcon={true} />
 
   <div class="row sideBar">
-    {#each $recentContactsStore as contact (contact)}
-      <ContactItem name="John Doe" time="18:18" avatarIcon={contact} />
+    {#each Object.values($users) as user (user.wa_id)}
+      <ContactItem name={user.name} time="18:18" avatarIcon={1} />
     {/each}
   </div>
 </div>
