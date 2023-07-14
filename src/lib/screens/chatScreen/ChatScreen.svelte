@@ -1,148 +1,128 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { io } from "socket.io-client";
-  const SOCKET_TARGET_URL = "http://localhost:3000";
+  const SOCKET_TARGET_URL = "http://192.168.2.38:3000";
 
   // Side One
-  import SideOne from "./ContactPanel/RecentContacts/RecentContactsSide.svelte";
+  import RecentContactsSide from "./ContactPanel/RecentContacts/RecentContactsSide.svelte";
 
   // Side Two
-  import SideTwo from "./ContactPanel/ComposeSide/ComposeSide.svelte";
+  import ComposeSide from "./ContactPanel/ComposeSide/ComposeSide.svelte";
 
   // Right pane
   import ChatWindow from "./ChatWindow/ChatWindow.svelte";
-  import type { IUser } from "chat-app-server";
 
   import { chatScreenDataStore } from "../../stores";
   import fetchMessagesOfUser from "../../../util/fetchMessagesOfUser";
-  const { users, currentChatUserWAID, clientSocket } = chatScreenDataStore;
-
-  /** When the component gets mounted, add the event listeners. */
+  import { fetchUsers } from "../../../util/fetchUsers";
+  const {
+    currentChatUserWAID,
+    clientSocket,
+    allContacts,
+    allMessagesOfCurrentChatUser,
+  } = chatScreenDataStore;
+  /**
+   * Set up event listeners and socket connection when the component is mounted.
+   */
   onMount(() => {
-    /** Open the contact list, and go away from the recent chats*/
     const sideTwoDivElement: HTMLDivElement =
       document.querySelector(".side-two")!;
-
-    // TODO: Switch to event modifiers
-    const openCompose = () => {
-      sideTwoDivElement.style.setProperty("left", "0");
-    };
-
-    /** Close the contact list, and go back to the recent chats */
-    const closeCompose = () => {
-      sideTwoDivElement.style.setProperty("left", "-100%");
-    };
-
     const commentIcon = document.querySelector(
       'div[data-js-selector="compose-open"]'
     );
     const newMessageBack = document.querySelector(
       'div[data-js-selector="compose-close"]'
     );
-    /**
-     * Listen for changes in the currentChatUserWAID - if changed, it means the chat has switched.
-     */
-    currentChatUserWAID.subscribe(async (newCurrentChatUserWAID) => {
-      if (newCurrentChatUserWAID !== undefined) {
-        const clientStoredMessages = await fetchMessagesOfUser(
-          newCurrentChatUserWAID
-        );
-        if (clientStoredMessages !== null) {
-          users.update((prevUsers) => {
-            const currentUser = prevUsers[$currentChatUserWAID];
-            if (currentUser) {
-              currentUser.whatsapp_messages = [...clientStoredMessages]; // Use spread syntax with an iterable
-              prevUsers[$currentChatUserWAID] = currentUser;
-            }
 
-            return prevUsers;
-          });
-        }
-      }
-    });
+    const openCompose = () => {
+      sideTwoDivElement.style.setProperty("left", "0");
+    };
 
-    /** Fetch all contacts from the backend */
+    const closeCompose = () => {
+      sideTwoDivElement.style.setProperty("left", "-100%");
+    };
 
     commentIcon?.addEventListener("click", openCompose);
     newMessageBack?.addEventListener("click", closeCompose);
 
-    /** Establish socket connection to messages namespace */
-    clientSocket.set(io(`${SOCKET_TARGET_URL}/chatView`));
+    // Establish socket connection to the chatView namespace
+    $clientSocket = io(`${SOCKET_TARGET_URL}/chatView`);
 
-    $clientSocket.on("message", (msg) => {
-      console.log($clientSocket?.data?.currentChatUser, "data");
-      // No user currently saved?
-      if (Object.keys($users).length === 0) {
-        currentChatUserWAID.set(msg.wa_id);
-      }
-      // Add new message to the whatsapp messages of the user and update the users store.
-      users.update((prevUsers) => {
-        const user = prevUsers[msg["wa_id"]];
-
-        // TODOonMount, fetch all users from rest api, if now a user comes after fetching from REST API,
-        // just create a new one on the frontend when a message is received from a yet unknown user.
-        if (!user) {
-          const newUser: IUser = {
-            name: "",
-            wa_id: msg["wa_id"],
-            whatsapp_messages: [],
-          };
-          // Add him into the users list.
-          prevUsers[msg["wa_id"]] = newUser;
-        }
-        prevUsers[msg["wa_id"]].whatsapp_messages.push(msg);
-        return prevUsers;
-      });
-    });
-
-    $clientSocket.on("contact", (contact) => {
-      console.log($currentChatUserWAID);
-
-      console.log("received contact");
-      // We're only interested in if this is a new contact or if no users are currently locally stored.
-      if (!(contact.wa_id in $users)) {
-        // Our only user, will be our default chat.
-        if (Object.keys($users).length === 0) {
-          $currentChatUserWAID = contact.wa_id;
-
-          // Update the clientSocket data with the currentChatUser
-          clientSocket.update((prevClientSocket) => {
-            // If data property does not exist, initialize it as an empty object
-            if (prevClientSocket.data === undefined) {
-              prevClientSocket.data = { currentChatUser: "" };
-            }
-            // Add the socket data to previous clientSocket
-            // prevClientSocket.data = {
-            //   ...$clientSocket.data,
-            //   currentChatUser: contact.wa_id,
-            // };
-            // New version.
-            return prevClientSocket;
+    /** Fetch all contacts: */
+    fetchUsers(["name", "wa_id"])
+      .then((fetchedContacts) => {
+        if (fetchedContacts !== undefined && fetchedContacts.length > 0) {
+          fetchedContacts.forEach((fetchedContact) => {
+            allContacts.update((prevAllContacts) => {
+              prevAllContacts[fetchedContact.wa_id] = fetchedContact;
+              return prevAllContacts;
+            });
           });
+          // After fetching set the currentChatUser to the first Item of the allContacts
+          $currentChatUserWAID = fetchedContacts[0].wa_id;
         }
+      })
+      .catch((error) => {
+        console.error(`Failed to fetch all contact items ${error}.`);
+      });
 
-        // Create a new user who has no messages yet.
-        const newContact: IUser = {
-          name: contact.name,
-          wa_id: contact.wa_id,
-          whatsapp_messages: [],
-        };
-
-        // Update the users state with the new contact
-        users.update((prevUsers) => {
-          prevUsers[contact.wa_id] = newContact;
-          return prevUsers;
-        });
-      }
-    });
-
-    // Cleanup / teardown
+    // Clean up event listeners and disconnect socket on component teardown
     return () => {
       commentIcon?.removeEventListener("click", openCompose);
       newMessageBack?.removeEventListener("click", closeCompose);
-      // Disconnects the socket manually. In that case, the socket will not try to reconnect.
       $clientSocket.disconnect();
     };
+  });
+
+  // Subscribe to changes in currentChatUserWAID - changes initially when 'onMount'
+  currentChatUserWAID.subscribe((newCurrentChatUserWAID) => {
+    if (newCurrentChatUserWAID !== undefined) {
+      // Tell server that we've switched chat.
+      $clientSocket.emit("chatSwitch", newCurrentChatUserWAID);
+
+      // Fetch messages of the current chat user
+      fetchMessagesOfUser(newCurrentChatUserWAID)
+        .then((clientStoredMessages) => {
+          if (clientStoredMessages !== null) {
+            allMessagesOfCurrentChatUser.set(clientStoredMessages);
+          }
+        })
+        .catch((error) => {
+          console.error(
+            `Failed to fetch all messages of the current user: ${error}`
+          );
+        });
+    }
+  });
+
+  clientSocket.subscribe((currentClientSocket) => {
+    if (currentClientSocket !== undefined) {
+      console.log("change of socket.");
+      // Event listener for "message" event
+      currentClientSocket.on("message", (msg) => {
+        console.log("received a new message");
+        // Set the currentChatUserWAID if there are no users stored yet
+        currentChatUserWAID.set(msg.wa_id);
+        allMessagesOfCurrentChatUser.update((prevMessages) => [
+          ...prevMessages,
+          msg,
+        ]);
+      });
+
+      // Event listener for "contact" event
+      currentClientSocket.on("contact", (contact) => {
+        // Set the currentChatUserWAID to the newly added contact if there are no users stored yet
+
+        /** Check if this contact is already stored locally */
+        if (!(contact.wa_id in $allContacts)) {
+          allContacts.update((prevContacts) => {
+            prevContacts[contact.wa_id] = contact;
+            return prevContacts;
+          });
+          $currentChatUserWAID = contact.wa_id;
+        }
+      });
+    }
   });
 </script>
 
@@ -150,8 +130,8 @@
   <div class="row app-one">
     <!-- Left hand panel -->
     <div class="col-sm-4 side">
-      <SideOne />
-      <SideTwo />
+      <RecentContactsSide />
+      <ComposeSide />
     </div>
 
     <!-- Right hand panel -->

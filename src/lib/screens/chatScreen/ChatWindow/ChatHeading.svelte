@@ -19,7 +19,7 @@
   // ---------------------- TYPES ----------------------
 
   export let userIsOnline: boolean = true;
-  const { currentChatUserWAID, users } = chatScreenDataStore;
+  const { currentChatUserWAID, allContacts } = chatScreenDataStore;
 
   //   Should take an user as input...
 </script>
@@ -34,7 +34,10 @@
       />
     </div>
     <div class="col-sm-8 col-xs-7 heading-name">
-      <a class="heading-name-meta">{$users[$currentChatUserWAID].name} </a>
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <a class="heading-name-meta"
+        >{$allContacts[$currentChatUserWAID]?.name}
+      </a>
       {#if userIsOnline}
         <span class="heading-online">Online</span>
       {/if}

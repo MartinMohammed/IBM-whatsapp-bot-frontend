@@ -6,10 +6,7 @@
 
 <div class="row heading">
   <div class="col-sm-3 col-xs-3 heading-avatar">
-    <AvatarIcon
-      src="https://bootdey.com/img/Content/avatar/avatar1.png"
-      size="small"
-    />
+    <AvatarIcon src="/FF-Logo.svg" size="small" />
   </div>
   <Icon
     columnWidth={1}

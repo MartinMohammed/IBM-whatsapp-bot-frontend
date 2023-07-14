@@ -1,12 +1,22 @@
 <script lang="ts">
   import AvatarIcon from "../../../components/icons/AvatarIcon.svelte";
+  import { chatScreenDataStore } from "../../../stores";
+  const { currentChatUserWAID } = chatScreenDataStore;
 
   export let name: string = "";
   export let time: string = "";
   export let avatarIcon: number = 1;
+  export let wa_id: string; // Unique identifier of the contact.
+
+  function onContactItemClick(e: Event) {
+    // Update the currentChatUser --> fetch all messages of the new current Chat user.
+    currentChatUserWAID.set(wa_id);
+  }
 </script>
 
-<div class="row sideBar-body">
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="row sideBar-body" on:click={onContactItemClick}>
   <div class="col-sm-3 col-xs-3 sideBar-avatar">
     <AvatarIcon
       size="default"

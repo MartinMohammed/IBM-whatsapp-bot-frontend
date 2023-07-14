@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { writable } from "svelte/store";
   // ---------------------- COMPONENTS ----------------------
   import TextArea from "../../../components/TextArea.svelte";
   import Icon from "../../../components/icons/Icon.svelte";
@@ -19,24 +18,19 @@
   import type { IClientStoredMessage } from "chat-app-server";
   // ---------------------- TYPES ----------------------
 
-  const { users, currentChatUserWAID, messageInputValue, clientSocket } =
-    chatScreenDataStore;
-
-  const messagesOfCurrentUser = writable<IClientStoredMessage[]>([]);
-
-  // Listen for changes in the users' data, e.g., when a new message is received
-  users.subscribe((users) => {
-    messagesOfCurrentUser.set([
-      ...(users[$currentChatUserWAID]?.whatsapp_messages || []),
-    ]);
-  });
+  const {
+    currentChatUserWAID,
+    messageInputValue,
+    clientSocket,
+    allMessagesOfCurrentChatUser,
+  } = chatScreenDataStore;
 
   function onInputSubmit(e: Event) {
-    if ($currentChatUserWAID) {
+    if ($currentChatUserWAID && $messageInputValue !== "") {
       // Perform client-side validation before sending the message to the server
 
       // Count the number of messages before adding the new one; it will also represent the index of the new message
-      const messagesCount = $messagesOfCurrentUser.length;
+      const messagesCount = $allMessagesOfCurrentChatUser.length;
 
       const newWhatsappMessage: IClientStoredMessage = {
         text: $messageInputValue,
@@ -47,7 +41,7 @@
       };
 
       // Add the new message to the array of messages
-      messagesOfCurrentUser.update((prevMessages) => {
+      allMessagesOfCurrentChatUser.update((prevMessages) => {
         prevMessages.push(newWhatsappMessage);
         return prevMessages;
       });
@@ -57,7 +51,7 @@
         if (!wamid) console.error("WAMID was not provided.");
         else {
           // Receive the WAMID from the server and set it in the corresponding message
-          messagesOfCurrentUser.update((prevMessages) => {
+          allMessagesOfCurrentChatUser.update((prevMessages) => {
             prevMessages[messagesCount]["wam_id"] = wamid;
             return prevMessages;
           });
@@ -85,7 +79,7 @@
     </div>
 
     <!-- List of messages -->
-    {#each $messagesOfCurrentUser as message}
+    {#each $allMessagesOfCurrentChatUser as message}
       <ChatMessageItem
         text={message.text}
         weekday="Sunday"

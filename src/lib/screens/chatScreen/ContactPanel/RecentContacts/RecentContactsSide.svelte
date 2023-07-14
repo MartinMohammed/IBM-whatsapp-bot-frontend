@@ -6,7 +6,7 @@
   import { chatScreenDataStore } from "../../../../stores";
   // TODO: filter only those contacts that has property 'isRecent' to true;
 
-  const { users } = chatScreenDataStore;
+  const { allContacts } = chatScreenDataStore;
 </script>
 
 <div class="side-one">
@@ -15,8 +15,13 @@
   <SearchBox placeholderText="Search" hasIcon={true} />
 
   <div class="row sideBar">
-    {#each Object.values($users) as user (user.wa_id)}
-      <ContactItem name={user.name} time="18:18" avatarIcon={1} />
+    {#each Object.values($allContacts) as contact, index (contact.wa_id)}
+      <ContactItem
+        name={contact.name}
+        wa_id={contact.wa_id}
+        time="18:18"
+        avatarIcon={(index + 1) % 6}
+      />
     {/each}
   </div>
 </div>
