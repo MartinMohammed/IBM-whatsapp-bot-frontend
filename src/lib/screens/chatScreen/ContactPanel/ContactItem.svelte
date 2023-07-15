@@ -1,27 +1,49 @@
 <script lang="ts">
+  import { defaultWhatsappProfileImage } from "../../../../util/Constants";
   import AvatarIcon from "../../../components/icons/AvatarIcon.svelte";
   import { chatScreenDataStore } from "../../../stores";
   const { currentChatUserWAID } = chatScreenDataStore;
+  import { slide, blur } from "svelte/transition";
+  import { backIn } from "svelte/easing";
+  import type { IClientStoredContact } from "chat-app-server";
 
-  export let name: string = "";
+  export let contactItem: IClientStoredContact;
+  const { name, whatsappProfileImage, wa_id } = contactItem;
   export let time: string = "";
-  export let avatarIcon: number = 1;
-  export let wa_id: string; // Unique identifier of the contact.
+  export let animated: boolean = false;
+
+  // Animation delay for in & out of ContactItem in seconds
+  export let animationDelay: number = 0;
+  $: shouldAnimateOnClick = false;
+  let HTMLContactItemDiv: HTMLDivElement;
 
   function onContactItemClick(e: Event) {
     // Update the currentChatUser --> fetch all messages of the new current Chat user.
     currentChatUserWAID.set(wa_id);
+    shouldAnimateOnClick = true;
+    setTimeout(() => {
+      shouldAnimateOnClick = false;
+    }, 500);
   }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="row sideBar-body" on:click={onContactItemClick}>
+<div
+  class="row sideBar-body"
+  class:contact-item-clicked={shouldAnimateOnClick}
+  bind:this={HTMLContactItemDiv}
+  in:slide={{
+    axis: "x",
+    duration: animated ? 800 : 0,
+    easing: backIn,
+    delay: animationDelay * 1000,
+  }}
+  out:blur={{ duration: animated ? 600 : 0 }}
+  on:click={onContactItemClick}
+>
   <div class="col-sm-3 col-xs-3 sideBar-avatar">
-    <AvatarIcon
-      size="default"
-      src="https://bootdey.com/img/Content/avatar/avatar{avatarIcon}.png"
-    />
+    <AvatarIcon size="default" src={whatsappProfileImage} />
   </div>
   <div class="col-sm-9 col-xs-9 sideBar-main">
     <div class="row">
@@ -36,6 +58,8 @@
 </div>
 
 <style>
+  @import "../../../../sass/_animations.scss";
+
   .sideBar-body {
     position: relative;
     padding: 10px !important;
@@ -86,6 +110,10 @@
     padding: 1% !important;
     color: rgba(0, 0, 0, 0.4);
     vertical-align: baseline;
+  }
+
+  .contact-item-clicked {
+    animation: pulse-animation 0.5s ease;
   }
 
   @media screen and (max-width: 700px) {

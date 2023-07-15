@@ -1,26 +1,28 @@
-<script>
+<script lang="ts">
   import ComposeHeading from "./ComposeHeading.svelte";
   import SearchBox from "../../../../components/SearchBox.svelte";
   import ContactItem from "../ContactItem.svelte";
   import { chatScreenDataStore } from "../../../../stores";
+  import { writable } from "svelte/store";
   const { allContacts } = chatScreenDataStore;
+
+  const SearchTerm = writable<string>("");
 </script>
 
 <div class="side-two">
   <ComposeHeading />
 
   <!-- Search box for the compose view -->
-  <SearchBox placeholderText={"Search People"} hasIcon={true} />
+  <SearchBox
+    placeholderText={"Search People"}
+    hasIcon={true}
+    inputValue={SearchTerm}
+  />
 
   <div class="row compose-sideBar">
     <!-- Unique key ensures, element is only rendered once -- keyed reconciliation -->
-    {#each Object.values($allContacts) as contact, index (contact.wa_id)}
-      <ContactItem
-        name={contact.name}
-        wa_id={contact.wa_id}
-        time="18:18"
-        avatarIcon={(index + 1) % 6}
-      />
+    {#each Object.values($allContacts) as contactItem (contactItem.wa_id)}
+      <ContactItem {contactItem} animated={false} time="18:18" />
     {/each}
   </div>
 </div>

@@ -3,10 +3,13 @@
   // was the sender or receiver.
   export let isReceiver: boolean = false;
   export let text: string = "";
+  import { fade } from "svelte/transition";
+  // a mathematical function that describes the rate at which a numerical value change
+  import { backIn } from "svelte/easing";
   export let weekday: string = "Mon";
 </script>
 
-<div class="row message-body">
+<div class="row message-body" in:fade={{ duration: 700, delay: 100 }}>
   <div class={`col-sm-12 message-main-${isReceiver ? "receiver" : "sender"}`}>
     <div class={`${isReceiver ? "receiver" : "sender"}`}>
       <div class="message-text">{text}</div>

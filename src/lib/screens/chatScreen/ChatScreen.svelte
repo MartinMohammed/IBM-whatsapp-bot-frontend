@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
   import { io } from "socket.io-client";
-  const SOCKET_TARGET_URL = "http://192.168.2.38:3000";
+  import { SERVER_BASE_URL } from "../../../util/Constants";
 
   // Side One
   import RecentContactsSide from "./ContactPanel/RecentContacts/RecentContactsSide.svelte";
 
   // Side Two
-  import ComposeSide from "./ContactPanel/ComposeSide/ComposeSide.svelte";
-
+  // import ComposeSide from "./ContactPanel/ComposeSide/ComposeSide.svelte";
   // Right pane
   import ChatWindow from "./ChatWindow/ChatWindow.svelte";
 
@@ -24,32 +23,40 @@
   /**
    * Set up event listeners and socket connection when the component is mounted.
    */
+  let isMobile = false;
   onMount(() => {
-    const sideTwoDivElement: HTMLDivElement =
-      document.querySelector(".side-two")!;
-    const commentIcon = document.querySelector(
-      'div[data-js-selector="compose-open"]'
-    );
-    const newMessageBack = document.querySelector(
-      'div[data-js-selector="compose-close"]'
-    );
+    isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
 
-    const openCompose = () => {
-      sideTwoDivElement.style.setProperty("left", "0");
-    };
+    // ------------------- CURRENTLY NOT REQUIREDN -------------------
+    // const sideTwoDivElement: HTMLDivElement =
+    //   document.querySelector(".side-two")!;
+    // const commentIcon = document.querySelector(
+    //   'div[data-js-selector="compose-open"]'
+    // );
+    // const newMessageBack = document.querySelector(
+    //   'div[data-js-selector="compose-close"]'
+    // );
 
-    const closeCompose = () => {
-      sideTwoDivElement.style.setProperty("left", "-100%");
-    };
+    // const openCompose = () => {
+    //   sideTwoDivElement.style.setProperty("left", "0");
+    // };
 
-    commentIcon?.addEventListener("click", openCompose);
-    newMessageBack?.addEventListener("click", closeCompose);
+    // const closeCompose = () => {
+    //   sideTwoDivElement.style.setProperty("left", "-100%");
+    // };
+
+    // commentIcon?.addEventListener("click", openCompose);
+    // newMessageBack?.addEventListener("click", closeCompose);
+    // ------------------- CURRENTLY NOT REQUIREDN -------------------
 
     // Establish socket connection to the chatView namespace
-    $clientSocket = io(`${SOCKET_TARGET_URL}/chatView`);
+    $clientSocket = io(`${SERVER_BASE_URL}/chatView`);
 
     /** Fetch all contacts: */
-    fetchUsers(["name", "wa_id"])
+    fetchUsers(["name", "wa_id", "whatsappProfileImage"])
       .then((fetchedContacts) => {
         if (fetchedContacts !== undefined && fetchedContacts.length > 0) {
           fetchedContacts.forEach((fetchedContact) => {
@@ -59,7 +66,10 @@
             });
           });
           // After fetching set the currentChatUser to the first Item of the allContacts
-          $currentChatUserWAID = fetchedContacts[0].wa_id;
+          // Only set if not mobile:
+          if (!isMobile) {
+            $currentChatUserWAID = fetchedContacts[0].wa_id;
+          }
         }
       })
       .catch((error) => {
@@ -68,8 +78,10 @@
 
     // Clean up event listeners and disconnect socket on component teardown
     return () => {
-      commentIcon?.removeEventListener("click", openCompose);
-      newMessageBack?.removeEventListener("click", closeCompose);
+      // ------------------- CURRENTLY NOT REQUIREDN -------------------
+      // commentIcon?.removeEventListener("click", openCompose);
+      // newMessageBack?.removeEventListener("click", closeCompose);
+      // ------------------- CURRENTLY NOT REQUIREDN -------------------
       $clientSocket.disconnect();
     };
   });
@@ -84,7 +96,11 @@
       fetchMessagesOfUser(newCurrentChatUserWAID)
         .then((clientStoredMessages) => {
           if (clientStoredMessages !== null) {
+            // Update the chat with the new messages.
             allMessagesOfCurrentChatUser.set(clientStoredMessages);
+
+            // TODO: set the unread messages to false
+            // $allContacts[$currentChatUserWAID].hasUnreadMessages = false;
           }
         })
         .catch((error) => {
@@ -97,12 +113,13 @@
 
   clientSocket.subscribe((currentClientSocket) => {
     if (currentClientSocket !== undefined) {
-      console.log("change of socket.");
       // Event listener for "message" event
       currentClientSocket.on("message", (msg) => {
-        console.log("received a new message");
         // Set the currentChatUserWAID if there are no users stored yet
-        currentChatUserWAID.set(msg.wa_id);
+        // Only set initially if not mobile
+        if ($allMessagesOfCurrentChatUser?.length === 0 && !isMobile) {
+          currentChatUserWAID.set(msg.wa_id);
+        }
         allMessagesOfCurrentChatUser.update((prevMessages) => [
           ...prevMessages,
           msg,
@@ -112,14 +129,20 @@
       // Event listener for "contact" event
       currentClientSocket.on("contact", (contact) => {
         // Set the currentChatUserWAID to the newly added contact if there are no users stored yet
-
         /** Check if this contact is already stored locally */
         if (!(contact.wa_id in $allContacts)) {
           allContacts.update((prevContacts) => {
             prevContacts[contact.wa_id] = contact;
             return prevContacts;
           });
-          $currentChatUserWAID = contact.wa_id;
+          /** Initially nobody was stored before and not mobile. */
+          if ($currentChatUserWAID === undefined && !isMobile) {
+            $currentChatUserWAID = contact.wa_id;
+          }
+        } else if (contact.wa_id !== $currentChatUserWAID) {
+          // TODO: set the unread messages to false
+          // A existing contact but not the currentChatUser:
+          $allContacts[$currentChatUserWAID].hasUnreadMessages = true;
         }
       });
     }
@@ -128,13 +151,26 @@
 
 <div class="container app">
   <div class="row app-one">
-    <!-- Left hand panel -->
-    <div class="col-sm-4 side">
-      <RecentContactsSide />
-      <ComposeSide />
-    </div>
+    {#if isMobile}
+      {#if !$currentChatUserWAID}
+        <!-- Left-hand panel -->
+        <div class="col-sm-4 side">
+          <!-- Should not be shown on mobile devices and if no currentChatUser is selected -->
+          <RecentContactsSide />
+          <!-- <ComposeSide /> -->
+        </div>
+      {/if}
+    {:else}
+      <!-- Not Mobile -->
+      <!-- Left-hand panel -->
+      <div class="col-sm-4 side">
+        <!-- Should not be shown on mobile devices and if there is a currentChatUser selected -->
+        <RecentContactsSide />
+        <!-- <ComposeSide /> -->
+      </div>
+    {/if}
 
-    <!-- Right hand panel -->
+    <!-- Right-hand panel -->
     <ChatWindow />
   </div>
 </div>

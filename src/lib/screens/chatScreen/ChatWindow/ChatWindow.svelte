@@ -41,20 +41,18 @@
       };
 
       // Add the new message to the array of messages
-      allMessagesOfCurrentChatUser.update((prevMessages) => {
-        prevMessages.push(newWhatsappMessage);
-        return prevMessages;
-      });
+      allMessagesOfCurrentChatUser.update((prevMessages) => [
+        ...prevMessages,
+        newWhatsappMessage,
+      ]);
 
       // Emit the message to the server
       $clientSocket.emit("message", newWhatsappMessage, (wamid) => {
         if (!wamid) console.error("WAMID was not provided.");
         else {
           // Receive the WAMID from the server and set it in the corresponding message
-          allMessagesOfCurrentChatUser.update((prevMessages) => {
-            prevMessages[messagesCount]["wam_id"] = wamid;
-            return prevMessages;
-          });
+          // WE dont want to re-render that's why we access the store and change the value
+          $allMessagesOfCurrentChatUser[messagesCount]["wam_id"] = wamid;
         }
       });
 
@@ -68,7 +66,6 @@
 
 <div class="col-sm-8 conversation">
   <ChatHeading userIsOnline={true} />
-
   <div class="row message" id="conversation">
     <div class="row message-previous">
       <div class="col-sm-12 previous">
@@ -79,7 +76,7 @@
     </div>
 
     <!-- List of messages -->
-    {#each $allMessagesOfCurrentChatUser as message}
+    {#each $allMessagesOfCurrentChatUser as message, index (index)}
       <ChatMessageItem
         text={message.text}
         weekday="Sunday"

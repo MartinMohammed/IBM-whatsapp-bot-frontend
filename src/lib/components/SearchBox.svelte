@@ -1,12 +1,16 @@
 <script lang="ts">
+  import type { Writable } from "svelte/store";
+
   export let placeholderText: string = "";
   export let hasIcon: boolean = false;
+  export let inputValue: Writable<string>;
 </script>
 
 <div class="row searchBox">
   <div class="col-sm-12 searchBox-inner">
     <div class="form-group has-feedback">
       <input
+        bind:value={$inputValue}
         id="searchText"
         type="text"
         class="form-control"

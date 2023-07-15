@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { defaultWhatsappProfileImage } from "../../../../util/Constants";
   // Represents the user heading, where the HeaderAvatarIcon is
   // the name and the status (online or not)
   // ---------------------- COMPONENTS ----------------------
@@ -17,9 +18,12 @@
   // ---------------------- TYPES ----------------------
 
   // ---------------------- TYPES ----------------------
+  const { currentChatUserWAID, allContacts } = chatScreenDataStore;
 
   export let userIsOnline: boolean = true;
-  const { currentChatUserWAID, allContacts } = chatScreenDataStore;
+  $: whatsappProfileImage =
+    $allContacts[$currentChatUserWAID]?.whatsappProfileImage ||
+    defaultWhatsappProfileImage;
 
   //   Should take an user as input...
 </script>
@@ -28,10 +32,7 @@
   <!-- Only display the avatar of the currentChatUser if there is one  -->
   {#if $currentChatUserWAID !== undefined}
     <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
-      <AvatarIcon
-        src="https://bootdey.com/img/Content/avatar/avatar1.png"
-        size="small"
-      />
+      <AvatarIcon src={whatsappProfileImage} size="small" />
     </div>
     <div class="col-sm-8 col-xs-7 heading-name">
       <!-- svelte-ignore a11y-missing-attribute -->

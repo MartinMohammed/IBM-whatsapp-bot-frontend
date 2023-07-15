@@ -2,7 +2,6 @@ import { writable } from "svelte/store";
 import type {
   IClientStoredContact,
   ClientToServerEventsMessagesType,
-  IClientStoredUser,
   ServerToClientEventsMessagesType,
   SocketDataMessagesType,
   IClientStoredMessage,
@@ -24,7 +23,7 @@ const allMessagesOfCurrentChatUser = writable<IClientStoredMessage[]>([])
  * Writable store for storing the WhatsApp ID of the current chat user.
  * Represents the user with whom the WhatsApp dashboard is currently engaging in a chat or conversation.
  */
-const currentChatUserWAID = writable<IClientStoredUser["wa_id"]>(undefined);
+const currentChatUserWAID = writable<IUser["wa_id"]>(undefined);
 
 /** Keeps track of the textarea at the bottom of the ChatWindow */
 const messageInputValue = writable<string>("");
