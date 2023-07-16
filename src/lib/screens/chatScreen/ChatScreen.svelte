@@ -11,7 +11,10 @@
   // Right pane
   import ChatWindow from "./ChatWindow/ChatWindow.svelte";
 
-  import { chatScreenDataStore } from "../../stores";
+  import {
+    chatScreenDataStore,
+    generalApplicationStore,
+  } from "../../../stores";
   import fetchMessagesOfUser from "../../../util/fetchMessagesOfUser";
   import { fetchUsers } from "../../../util/fetchUsers";
   const {
@@ -20,16 +23,12 @@
     allContacts,
     allMessagesOfCurrentChatUser,
   } = chatScreenDataStore;
+
+  const { isMobile } = generalApplicationStore;
   /**
    * Set up event listeners and socket connection when the component is mounted.
    */
-  let isMobile = false;
   onMount(() => {
-    isMobile =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
-
     // ------------------- CURRENTLY NOT REQUIREDN -------------------
     // const sideTwoDivElement: HTMLDivElement =
     //   document.querySelector(".side-two")!;
@@ -67,7 +66,7 @@
           });
           // After fetching set the currentChatUser to the first Item of the allContacts
           // Only set if not mobile:
-          if (!isMobile) $currentChatUserWAID = fetchedContacts[0].wa_id;
+          if (!$isMobile) $currentChatUserWAID = fetchedContacts[0].wa_id;
         }
       })
       .catch((error) => {
@@ -86,12 +85,12 @@
 
   // Subscribe to changes in currentChatUserWAID - changes initially when 'onMount'
   currentChatUserWAID.subscribe((newCurrentChatUserWAID) => {
-    if (newCurrentChatUserWAID !== undefined) {
+    if (newCurrentChatUserWAID !== "") {
       // Tell server that we've switched chat.
       $clientSocket.emit("chatSwitch", newCurrentChatUserWAID);
 
-      // Fetch messages of the current chat user
-      fetchMessagesOfUser(newCurrentChatUserWAID)
+      // Fetch messages of the current chat user - initially only the latest 10.
+      fetchMessagesOfUser(newCurrentChatUserWAID, -1)
         .then((clientStoredMessages) => {
           if (clientStoredMessages !== null) {
             // Update the chat with the new messages.
@@ -115,7 +114,7 @@
       currentClientSocket.on("message", (msg) => {
         // Set the currentChatUserWAID if there are no users stored yet
         // Only set initially if not mobile
-        if ($allMessagesOfCurrentChatUser?.length === 0 && !isMobile) {
+        if ($allMessagesOfCurrentChatUser?.length === 0 && !$isMobile) {
           currentChatUserWAID.set(msg.wa_id);
         }
         allMessagesOfCurrentChatUser.update((prevMessages) => [
@@ -134,7 +133,7 @@
             return prevContacts;
           });
           /** Initially nobody was stored before and not mobile. */
-          if ($currentChatUserWAID === undefined && !isMobile) {
+          if ($currentChatUserWAID === "" && !$isMobile) {
             $currentChatUserWAID = contact.wa_id;
           }
         } else if (contact.wa_id !== $currentChatUserWAID) {
@@ -150,9 +149,10 @@
 
 <div class="container app">
   <div class="row app-one">
-    {#if isMobile}
+    {#if $isMobile}
       {#if !$currentChatUserWAID}
         <!-- Left-hand panel -->
+        <!-- "col-sm-4" -->
         <div class="col-sm-4 side">
           <!-- Should not be shown on mobile devices and if no currentChatUser is selected -->
           <RecentContactsSide />
@@ -162,6 +162,7 @@
     {:else}
       <!-- Not Mobile -->
       <!-- Left-hand panel -->
+      <!-- "col-sm-4" -->
       <div class="col-sm-4 side">
         <!-- Should not be shown on mobile devices and if there is a currentChatUser selected -->
         <RecentContactsSide />
@@ -170,6 +171,7 @@
     {/if}
 
     <!-- Right-hand panel -->
+    <!-- "col-sm-8" -->
     <ChatWindow />
   </div>
 </div>

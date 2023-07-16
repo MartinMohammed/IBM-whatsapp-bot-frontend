@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { chatScreenDataStore } from "../stores";
+  import { chatScreenDataStore } from "../../stores";
   const { messageInputValue } = chatScreenDataStore;
 
   // Keep track of the input field value

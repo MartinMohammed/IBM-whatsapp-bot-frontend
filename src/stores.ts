@@ -9,21 +9,31 @@ import type {
 } from "chat-app-server";
 import { Socket } from "socket.io-client";
 
-/**
-
+// ------------------------------ GENERAL APPLICATION STORE ------------------------------
+const isMobile = writable<boolean>(
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  )
+);
+// ------------------------------ GENERAL APPLICATION STORE ------------------------------
 
 /** Represents all contacts that have at least one message with the user */
 const allContacts = writable<{
-  [key: IUser["wa_id"]]: IClientStoredContact
-}>({})
+  [key: IUser["wa_id"]]: IClientStoredContact;
+}>({});
 
-const allMessagesOfCurrentChatUser = writable<IClientStoredMessage[]>([])
+const allMessagesOfCurrentChatUser = writable<IClientStoredMessage[]>([]);
+
+/** Tracks the page count for the messages shown in the ChatWindow.
+ *  It increments when 'ShowPreviousMessages' is triggered.
+ */
+const pageCountOfCurrentChatUser = writable<number>(1);
 
 /**
  * Writable store for storing the WhatsApp ID of the current chat user.
  * Represents the user with whom the WhatsApp dashboard is currently engaging in a chat or conversation.
  */
-const currentChatUserWAID = writable<IUser["wa_id"]>(undefined);
+const currentChatUserWAID = writable<IUser["wa_id"]>("");
 
 /** Keeps track of the textarea at the bottom of the ChatWindow */
 const messageInputValue = writable<string>("");
@@ -36,8 +46,6 @@ export type ClientSocketType = Socket<
 /** Hold the value of the socket connection to the server for the 'messages' namespace */
 const clientSocket = writable<ClientSocketType>(undefined);
 
-
-
 /**
  * Store for managing the application data.
  */
@@ -46,9 +54,14 @@ export const chatScreenDataStore = {
    * Writable store for storing all contacts.
    * TODO: Use an 'isRecent' boolean to prevent redundancy and keep track of whether a certain contact is recent.
    */
-  allMessagesOfCurrentChatUser, 
-  allContacts, 
+  pageCountOfCurrentChatUser,
+  allMessagesOfCurrentChatUser,
+  allContacts,
   clientSocket,
   currentChatUserWAID,
   messageInputValue,
+};
+
+export const generalApplicationStore = {
+  isMobile,
 };

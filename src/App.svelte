@@ -1,5 +1,6 @@
 <script lang="ts">
   import ChatScreen from "./lib/screens/chatScreen/ChatScreen.svelte";
+  import { generalApplicationStore } from "./stores";
 </script>
 
 <svelte:head>

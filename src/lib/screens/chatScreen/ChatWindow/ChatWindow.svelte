@@ -7,15 +7,18 @@
   // ---------------------- COMPONENTS ----------------------
 
   // ---------------------- STATE ----------------------
-  import { chatScreenDataStore } from "../../../stores";
+  import { chatScreenDataStore } from "../../../../stores";
   // ---------------------- STATE ----------------------
 
   // ---------------------- UTILITIES ----------------------
   import getUnixTimestamp from "../../../../util/getUnixTimestamp";
+  import { WeekDayMap, convertUnixTimestamp } from "../../../../util/date";
   // ---------------------- UTILITIES ----------------------
 
   // ---------------------- TYPES ----------------------
   import type { IClientStoredMessage } from "chat-app-server";
+  import fetchMessagesOfUser from "../../../../util/fetchMessagesOfUser";
+
   // ---------------------- TYPES ----------------------
 
   const {
@@ -23,6 +26,7 @@
     messageInputValue,
     clientSocket,
     allMessagesOfCurrentChatUser,
+    pageCountOfCurrentChatUser,
   } = chatScreenDataStore;
 
   function onInputSubmit(e: Event) {
@@ -62,24 +66,58 @@
       console.error("Cannot log if no current user is selected.");
     }
   }
+
+  function showPreviousMessages(e: Event) {
+    // Increment the page count only if there are more messages available to fetch.
+    // The sentinel value of -1 indicates that no more messages are left to fetch.
+    if ($pageCountOfCurrentChatUser !== -1) {
+      pageCountOfCurrentChatUser.update((prevValue) => prevValue + 1);
+    }
+
+    pageCountOfCurrentChatUser.subscribe(async (currentPageCount) => {
+      const newPrevMessages = await fetchMessagesOfUser(
+        $currentChatUserWAID,
+        -currentPageCount
+      );
+      if (newPrevMessages === null || newPrevMessages.length !== 10) {
+        $pageCountOfCurrentChatUser = -1; // No more messages are left.
+      } else {
+        // Update the store.
+        allMessagesOfCurrentChatUser.update((prevAllMessages) => {
+          console.log(newPrevMessages);
+          return newPrevMessages.concat(prevAllMessages);
+        });
+      }
+    });
+  }
 </script>
 
 <div class="col-sm-8 conversation">
   <ChatHeading userIsOnline={true} />
-  <div class="row message" id="conversation">
-    <div class="row message-previous">
-      <div class="col-sm-12 previous">
-        <!-- TODO: Add an event listener to show messages from the last three days when clicked -->
-        <!-- svelte-ignore a11y-missing-attribute -->
-        <a> Show Previous Messages! </a>
+  <div
+    class="row message"
+    id="conversation"
+    style={`${
+      $pageCountOfCurrentChatUser === -1 ? "padding-top: 10px !important;" : ""
+    }`}
+  >
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    {#if $pageCountOfCurrentChatUser !== -1}
+      <div class="row message-previous" on:click={showPreviousMessages}>
+        <div class="col-sm-12 previous">
+          <!-- svelte-ignore a11y-missing-attribute -->
+          <a> Show Previous Messages! </a>
+        </div>
       </div>
-    </div>
+    {/if}
 
     <!-- List of messages -->
     {#each $allMessagesOfCurrentChatUser as message, index (index)}
       <ChatMessageItem
         text={message.text}
-        weekday="Sunday"
+        weekday={WeekDayMap[convertUnixTimestamp(message.timestamp).getDay()]}
         isReceiver={message.sentByClient}
       />
     {/each}

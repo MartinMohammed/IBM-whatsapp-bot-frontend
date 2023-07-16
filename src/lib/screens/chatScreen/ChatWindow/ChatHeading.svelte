@@ -8,7 +8,10 @@
   // ---------------------- COMPONENTS ----------------------
 
   // ---------------------- STATE ----------------------
-  import { chatScreenDataStore } from "../../../stores";
+  import {
+    chatScreenDataStore,
+    generalApplicationStore,
+  } from "../../../../stores";
   // ---------------------- STATE ----------------------
 
   // ---------------------- UTILITIES ----------------------
@@ -18,6 +21,7 @@
   // ---------------------- TYPES ----------------------
 
   // ---------------------- TYPES ----------------------
+  const { isMobile } = generalApplicationStore;
   const { currentChatUserWAID, allContacts } = chatScreenDataStore;
 
   export let userIsOnline: boolean = true;
@@ -30,7 +34,7 @@
 
 <div class="row heading">
   <!-- Only display the avatar of the currentChatUser if there is one  -->
-  {#if $currentChatUserWAID !== undefined}
+  {#if $currentChatUserWAID !== ""}
     <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
       <AvatarIcon src={whatsappProfileImage} size="small" />
     </div>
@@ -47,8 +51,9 @@
       columnWidth={1}
       pullRight={true}
       ariaHidden={true}
-      iconType="dot-icon"
+      iconType={$isMobile ? "back-icon" : `dot-icon`}
       iconSize="default"
+      onIconClick={$isMobile ? () => ($currentChatUserWAID = "") : () => {}}
     />
   {/if}
 </div>

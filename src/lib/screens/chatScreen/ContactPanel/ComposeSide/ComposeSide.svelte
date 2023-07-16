@@ -2,7 +2,7 @@
   import ComposeHeading from "./ComposeHeading.svelte";
   import SearchBox from "../../../../components/SearchBox.svelte";
   import ContactItem from "../ContactItem.svelte";
-  import { chatScreenDataStore } from "../../../../stores";
+  import { chatScreenDataStore } from "../../../../../stores";
   import { writable } from "svelte/store";
   const { allContacts } = chatScreenDataStore;
 

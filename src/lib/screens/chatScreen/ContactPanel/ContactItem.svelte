@@ -1,7 +1,7 @@
 <script lang="ts">
   // Import statements
   import AvatarIcon from "../../../components/icons/AvatarIcon.svelte";
-  import { chatScreenDataStore } from "../../../stores";
+  import { chatScreenDataStore } from "../../../../stores";
   import { slide, blur } from "svelte/transition";
   import { backIn } from "svelte/easing";
   import type { IClientStoredContact } from "chat-app-server";
