@@ -1,25 +1,32 @@
 <script lang="ts">
-  import { defaultWhatsappProfileImage } from "../../../../util/Constants";
+  // Import statements
   import AvatarIcon from "../../../components/icons/AvatarIcon.svelte";
   import { chatScreenDataStore } from "../../../stores";
-  const { currentChatUserWAID } = chatScreenDataStore;
   import { slide, blur } from "svelte/transition";
   import { backIn } from "svelte/easing";
   import type { IClientStoredContact } from "chat-app-server";
 
+  // Exported variables
   export let contactItem: IClientStoredContact;
-  const { name, whatsappProfileImage, wa_id } = contactItem;
   export let time: string = "";
   export let animated: boolean = false;
-
-  // Animation delay for in & out of ContactItem in seconds
   export let animationDelay: number = 0;
+
+  // Destructure values from contactItem
+  const { name, whatsappProfileImage, wa_id } = contactItem;
+
+  // Access currentChatUserWAID from chatScreenDataStore
+  const { currentChatUserWAID } = chatScreenDataStore;
+
+  // Reactive statement
   $: shouldAnimateOnClick = false;
+
+  // DOM reference
   let HTMLContactItemDiv: HTMLDivElement;
 
   function onContactItemClick(e: Event) {
     // Update the currentChatUser --> fetch all messages of the new current Chat user.
-    currentChatUserWAID.set(wa_id);
+    $currentChatUserWAID = wa_id;
     shouldAnimateOnClick = true;
     setTimeout(() => {
       shouldAnimateOnClick = false;

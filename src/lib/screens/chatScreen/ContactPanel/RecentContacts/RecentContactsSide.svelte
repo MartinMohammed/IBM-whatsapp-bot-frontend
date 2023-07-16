@@ -1,19 +1,13 @@
 <script lang="ts">
+  // Import statements
   import RecentContactsHeading from "./RecentContactsHeading.svelte";
   import SearchBox from "../../../../components/SearchBox.svelte";
   import ContactItem from "../ContactItem.svelte";
   import { chatScreenDataStore } from "../../../../stores";
   import { writable } from "svelte/store";
-  import type { IClientStoredContact } from "chat-app-server";
 
+  // Access allContacts from chatScreenDataStore
   const { allContacts } = chatScreenDataStore;
-
-  /**
-   * Store to hold the filtered contacts based on the search term.
-   */
-  const filteredContacts = writable<IClientStoredContact[]>(
-    Object.values(allContacts)
-  );
 
   /**
    * Flag to track the initial mount of ContactItem components.
@@ -21,42 +15,32 @@
   $: initialMountOfContactItem = true;
 
   // Subscribe to changes in allContacts and update filteredContacts accordingly
-  allContacts.subscribe((newContacts) => {
-    filteredContacts.set(Object.values(newContacts));
-  });
+  // allContacts.subscribe((newContacts) => {
+  //   filteredContacts.set(Object.values(newContacts));
+  // });
 
   /**
    * Store to hold the search term entered by the user.
    */
-  const searchTermStore = writable<string>("");
+  const searchTerm = writable<string>("");
 
-  // Subscribe to changes in searchTerm and update filteredContacts accordingly
-  searchTermStore.subscribe((newSearchTerm) => {
-    filteredContacts.update((prevContacts) => {
-      // No search term was applied
-      if (newSearchTerm === "") return Object.values($allContacts);
-      else {
-        // Filtering means the ContactItems were displayed at least once.
-        if (initialMountOfContactItem) initialMountOfContactItem = false;
-        return prevContacts.filter((prevContact) =>
-          prevContact.name.toLowerCase().includes(newSearchTerm.toLowerCase())
-        );
-      }
-    });
+  /** Recomputed every time if one of the dependencies changes. */
+  $: filteredContacts = Object.values($allContacts).filter(({ name }) => {
+    // Search term was provided
+    if ($searchTerm !== "") initialMountOfContactItem = false;
+
+    /** User tried to filter */
+    return name.toLocaleLowerCase().includes($searchTerm.toLowerCase());
   });
 </script>
 
 <div class="side-one">
   <RecentContactsHeading />
 
-  <SearchBox
-    placeholderText="Search"
-    hasIcon={true}
-    inputValue={searchTermStore}
-  />
+  <SearchBox placeholderText="Search" hasIcon={true} inputValue={searchTerm} />
 
   <div class="row sideBar">
-    {#each $filteredContacts as contactItem, index (contactItem.wa_id)}
+    {#each filteredContacts as contactItem, index (contactItem.wa_id)}
       <ContactItem
         animationDelay={initialMountOfContactItem ? index * 0.25 : 0}
         {contactItem}

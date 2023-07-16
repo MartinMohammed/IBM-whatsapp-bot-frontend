@@ -6,7 +6,7 @@
   import { writable } from "svelte/store";
   const { allContacts } = chatScreenDataStore;
 
-  const SearchTerm = writable<string>("");
+  const searchTerm = writable<string>("");
 </script>
 
 <div class="side-two">
@@ -16,7 +16,7 @@
   <SearchBox
     placeholderText={"Search People"}
     hasIcon={true}
-    inputValue={SearchTerm}
+    inputValue={searchTerm}
   />
 
   <div class="row compose-sideBar">

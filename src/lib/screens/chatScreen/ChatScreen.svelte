@@ -67,9 +67,7 @@
           });
           // After fetching set the currentChatUser to the first Item of the allContacts
           // Only set if not mobile:
-          if (!isMobile) {
-            $currentChatUserWAID = fetchedContacts[0].wa_id;
-          }
+          if (!isMobile) $currentChatUserWAID = fetchedContacts[0].wa_id;
         }
       })
       .catch((error) => {
@@ -142,7 +140,8 @@
         } else if (contact.wa_id !== $currentChatUserWAID) {
           // TODO: set the unread messages to false
           // A existing contact but not the currentChatUser:
-          $allContacts[$currentChatUserWAID].hasUnreadMessages = true;
+          // TODO
+          // $allContacts[$currentChatUserWAID].hasUnreadMessages = true;
         }
       });
     }
