@@ -19,7 +19,6 @@
 
   /** Aslong holding Shift, a new line should be appended. */
   function onKeyUp(e: KeyboardEvent) {
-    console.log("keyup");
     if (e.key === "Shift") isShiftKeyDown = false;
     else if (e.key === "Meta") isMetaDown = false;
   }

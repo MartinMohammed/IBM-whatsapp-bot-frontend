@@ -1,6 +1,6 @@
 <script lang="ts">
   import ChatScreen from "./lib/screens/chatScreen/ChatScreen.svelte";
-  import { generalApplicationStore } from "./stores";
+  import Home from "./lib/screens/Home/Login/Home.svelte";
 </script>
 
 <svelte:head>
@@ -24,9 +24,11 @@
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
   />
+
   <title>Fitness Fabrik</title>
 </svelte:head>
 
 <!-- Something like a router or co.  -->
 
-<ChatScreen />
+<Home />
+<!-- <ChatScreen /> -->

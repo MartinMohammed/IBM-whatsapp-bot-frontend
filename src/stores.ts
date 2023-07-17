@@ -9,14 +9,6 @@ import type {
 } from "chat-app-server";
 import { Socket } from "socket.io-client";
 
-// ------------------------------ GENERAL APPLICATION STORE ------------------------------
-const isMobile = writable<boolean>(
-  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  )
-);
-// ------------------------------ GENERAL APPLICATION STORE ------------------------------
-
 /** Represents all contacts that have at least one message with the user */
 const allContacts = writable<{
   [key: IUser["wa_id"]]: IClientStoredContact;
@@ -62,6 +54,26 @@ export const chatScreenDataStore = {
   messageInputValue,
 };
 
+const isMobile = writable<boolean>(
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  )
+);
+
 export const generalApplicationStore = {
   isMobile,
+};
+
+/** Whether the inital Login Modal/ Form Control should be displayed */
+const showLoginModal = writable<boolean>(false);
+
+/** Whether the Registration Form Control should be displayed after Login Form Control */
+const showRegistrationFormControl = writable<boolean>(false);
+
+/**
+ * Store for managing the application data.
+ */
+export const homepageStore = {
+  showLoginModal,
+  showRegistrationFormControl,
 };

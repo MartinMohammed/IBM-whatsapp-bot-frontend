@@ -82,7 +82,6 @@
       } else {
         // Update the store.
         allMessagesOfCurrentChatUser.update((prevAllMessages) => {
-          console.log(newPrevMessages);
           return newPrevMessages.concat(prevAllMessages);
         });
       }

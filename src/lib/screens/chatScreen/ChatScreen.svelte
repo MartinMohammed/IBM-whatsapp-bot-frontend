@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { io } from "socket.io-client";
   import { SERVER_BASE_URL } from "../../../util/Constants";
+  import ChatScreenLayout from "../../layout/chatScreen.layout.svelte";
 
   // Side One
   import RecentContactsSide from "./ContactPanel/RecentContacts/RecentContactsSide.svelte";
@@ -147,34 +148,36 @@
   });
 </script>
 
-<div class="container app">
-  <div class="row app-one">
-    {#if $isMobile}
-      {#if !$currentChatUserWAID}
+<ChatScreenLayout>
+  <div class="container app">
+    <div class="row app-one">
+      {#if $isMobile}
+        {#if !$currentChatUserWAID}
+          <!-- Left-hand panel -->
+          <!-- "col-sm-4" -->
+          <div class="col-sm-4 side">
+            <!-- Should not be shown on mobile devices and if no currentChatUser is selected -->
+            <RecentContactsSide />
+            <!-- <ComposeSide /> -->
+          </div>
+        {/if}
+      {:else}
+        <!-- Not Mobile -->
         <!-- Left-hand panel -->
         <!-- "col-sm-4" -->
         <div class="col-sm-4 side">
-          <!-- Should not be shown on mobile devices and if no currentChatUser is selected -->
+          <!-- Should not be shown on mobile devices and if there is a currentChatUser selected -->
           <RecentContactsSide />
           <!-- <ComposeSide /> -->
         </div>
       {/if}
-    {:else}
-      <!-- Not Mobile -->
-      <!-- Left-hand panel -->
-      <!-- "col-sm-4" -->
-      <div class="col-sm-4 side">
-        <!-- Should not be shown on mobile devices and if there is a currentChatUser selected -->
-        <RecentContactsSide />
-        <!-- <ComposeSide /> -->
-      </div>
-    {/if}
 
-    <!-- Right-hand panel -->
-    <!-- "col-sm-8" -->
-    <ChatWindow />
+      <!-- Right-hand panel -->
+      <!-- "col-sm-8" -->
+      <ChatWindow />
+    </div>
   </div>
-</div>
+</ChatScreenLayout>
 
 <style>
   .app {
