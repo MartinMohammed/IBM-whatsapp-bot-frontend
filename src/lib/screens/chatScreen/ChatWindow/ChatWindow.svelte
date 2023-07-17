@@ -29,7 +29,7 @@
     pageCountOfCurrentChatUser,
   } = chatScreenDataStore;
 
-  function onInputSubmit(e: Event) {
+  function onInputSubmit() {
     if ($currentChatUserWAID && $messageInputValue !== "") {
       // Perform client-side validation before sending the message to the server
 
@@ -59,8 +59,6 @@
           $allMessagesOfCurrentChatUser[messagesCount]["wam_id"] = wamid;
         }
       });
-
-      // Clear the text area field
       $messageInputValue = "";
     } else {
       console.error("Cannot log if no current user is selected.");
@@ -132,7 +130,7 @@
     />
 
     <!-- Allow the event to bubble up -->
-    <TextArea on:inputSubmit />
+    <TextArea {onInputSubmit} />
 
     <Icon
       columnWidth={1}

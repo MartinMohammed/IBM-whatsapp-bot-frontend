@@ -1,9 +1,28 @@
 <script lang="ts">
   import { chatScreenDataStore } from "../../stores";
-  const { messageInputValue } = chatScreenDataStore;
+  export let onInputSubmit: () => void = () => undefined;
 
-  // Keep track of the input field value
-  let messageInput: string = "";
+  const { messageInputValue } = chatScreenDataStore;
+  let isShiftKeyDown = false;
+  let isMetaDown = false;
+
+  /** If he stops pressing on Shift, emit the event on next Enter*/
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.key === "Shift") isShiftKeyDown = true;
+    else if (e.key === "Meta") isMetaDown = true;
+    else if (e.key === "Enter") {
+      if (!isShiftKeyDown && isMetaDown) {
+        onInputSubmit();
+      }
+    }
+  }
+
+  /** Aslong holding Shift, a new line should be appended. */
+  function onKeyUp(e: KeyboardEvent) {
+    console.log("keyup");
+    if (e.key === "Shift") isShiftKeyDown = false;
+    else if (e.key === "Meta") isMetaDown = false;
+  }
 </script>
 
 <div class="col-sm-9 col-xs-9 textarea-field">
@@ -11,6 +30,8 @@
     class="form-control"
     rows="1"
     id="comment"
+    on:keyup={onKeyUp}
+    on:keydown={onKeyDown}
     bind:value={$messageInputValue}
   />
 </div>
