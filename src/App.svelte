@@ -1,6 +1,8 @@
 <script lang="ts">
   import ChatScreen from "./lib/screens/chatScreen/ChatScreen.svelte";
-  import Home from "./lib/screens/Home/Login/Home.svelte";
+  import Home from "./lib/screens/Home/Home.svelte";
+  import { generalApplicationStore } from "./stores";
+  const { userIsLoggedIn } = generalApplicationStore;
 </script>
 
 <svelte:head>
@@ -24,11 +26,12 @@
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
   />
-
-  <title>Fitness Fabrik</title>
 </svelte:head>
 
 <!-- Something like a router or co.  -->
 
-<Home />
-<!-- <ChatScreen /> -->
+{#if $userIsLoggedIn}
+  <ChatScreen />
+{:else}
+  <Home />
+{/if}

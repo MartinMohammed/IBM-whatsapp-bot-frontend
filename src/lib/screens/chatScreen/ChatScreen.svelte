@@ -3,6 +3,8 @@
   import { io } from "socket.io-client";
   import { SERVER_BASE_URL } from "../../../util/Constants";
   import ChatScreenLayout from "../../layout/chatScreen.layout.svelte";
+  import { fade } from "svelte/transition";
+  import { backIn } from "svelte/easing";
 
   // Side One
   import RecentContactsSide from "./ContactPanel/RecentContacts/RecentContactsSide.svelte";
@@ -149,7 +151,7 @@
 </script>
 
 <ChatScreenLayout>
-  <div class="container app">
+  <div class="container app" in:fade={{ duration: 1000, easing: backIn }}>
     <div class="row app-one">
       {#if $isMobile}
         {#if !$currentChatUserWAID}

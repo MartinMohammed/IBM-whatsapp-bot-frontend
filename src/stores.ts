@@ -60,8 +60,12 @@ const isMobile = writable<boolean>(
   )
 );
 
+/** Determines whether to show the whatsapp dashboard or not  */
+const userIsLoggedIn = writable<boolean>(false);
+
 export const generalApplicationStore = {
   isMobile,
+  userIsLoggedIn,
 };
 
 /** Whether the inital Login Modal/ Form Control should be displayed */
