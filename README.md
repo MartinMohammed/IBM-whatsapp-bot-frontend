@@ -1,3 +1,15 @@
+## Login Screen 
+
+<img width="1440" alt="image" src="https://github.com/MartinMohammed/whataspp-dashboard-svelte/assets/81469658/9cc033d6-48c3-4efd-bd2d-b81fce6df6c3">
+
+## Chat Screen
+
+<img width="1440" alt="image" src="https://github.com/MartinMohammed/whataspp-dashboard-svelte/assets/81469658/377f62d9-581f-4230-b6c0-e3f20f5a4c23">
+
+
+
+
+
 # Svelte + TS + Vite
 
 This template should help get you started developing with Svelte and TypeScript in Vite.
