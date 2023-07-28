@@ -21,12 +21,6 @@ The success of the WhatsApp Chatbot was impressive, as it garnered widespread in
 - [Gym Occupancy Tracker Repository](https://github.com/MartinMohammed/IBM-whatsapp-occupancy-scraper)
 - [WhatsApp Middleware NPM Package](https://github.com/MartinMohammed/IBM-whatsapp-bot-middleware-npm)
 
-## Gym Occupancy Tracker
-
-The Gym Occupancy Tracker is a Python program that web-scrapes the Fitness Fabrik gym website to extract data about the current number of people training in the gym. It uses Beautiful Soup to parse the HTML and extract relevant data. The program also integrates with a Telegram bot to notify users when the gym occupancy meets their desired criteria.
-
-[Link to Gym Occupancy Tracker Repository](https://github.com/MartinMohammed/IBM-whatsapp-occupancy-scraper)
-
 ## Svelte Frontend Dashboard
 
 The Svelte Frontend Dashboard is a web application that allows the CRS (customer service) team of the company to interact with their gym-members (and in the production version to supervise the responses of Google's Dialogflow AI). It enables a shift from conventional customer service on mobile phones to modern and quick-response automated WhatsApp customer service.
@@ -54,6 +48,12 @@ The WhatsApp Backend server is responsible for delivering new incoming messages 
 The Authorization Server with JWT is a secure authentication service that allows users to register, login, and manage their authentication tokens. It provides endpoints for user registration, user login, refreshing access tokens, and logging out. The API uses JWTs for authentication and Redis for managing refresh tokens.
 
 [Link to Authorization Server Repository](https://github.com/MartinMohammed/IBM-jwt-authorization)
+
+## Gym Occupancy Tracker
+
+The Gym Occupancy Tracker is a Python program that web-scrapes the Fitness Fabrik gym website to extract data about the current number of people training in the gym. It uses Beautiful Soup to parse the HTML and extract relevant data. The program also integrates with a Telegram bot to notify users when the gym occupancy meets their desired criteria.
+
+[Link to Gym Occupancy Tracker Repository](https://github.com/MartinMohammed/IBM-whatsapp-occupancy-scraper)
 
 # WhatsApp Middleware NPM Package
 
