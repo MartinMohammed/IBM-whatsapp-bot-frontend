@@ -55,7 +55,7 @@ The Gym Occupancy Tracker is a Python program that web-scrapes the Fitness Fabri
 
 [Link to Gym Occupancy Tracker Repository](https://github.com/MartinMohammed/IBM-whatsapp-occupancy-scraper)
 
-# WhatsApp Middleware NPM Package
+## WhatsApp Middleware NPM Package
 
 The WhatsApp Middleware Package is a highly successful npm package developed during my internship at IBM. It serves as a crucial component of the Fitness App Suite, enabling seamless integration with the WhatsApp Chatbot and real-time message communication.
 
