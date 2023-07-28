@@ -6,54 +6,25 @@
 
 <img width="1440" alt="image" src="https://github.com/MartinMohammed/whataspp-dashboard-svelte/assets/81469658/377f62d9-581f-4230-b6c0-e3f20f5a4c23">
 
+# Project Overview
 
+This project represents the public part of my work at IBM, collaborating with the client Body Culture Group in Darmstadt. As the product owner, I was responsible for its successful release. The application contains non-company internal data, and the deployed version of the project remains private.
 
+The frontend of this project, built with Svelte, establishes a websocket connection to the server and fetches data from the backend. Please note that this app is only a public demo and does not reflect the production version.
 
+## More about the Project
 
-# Svelte + TS + Vite
+Upon entering the app, users need to log in using their email and password. Behind the scenes, a JWT authorization server runs, which has an internal database with valid user information. After a successful login, the server returns a pair of tokens: a refresh token and an access token, following the JWT authorization mechanism. Subsequently, a fetch request is made to the backend to retrieve all recent WhatsApp messages. The app tracks every action the user takes on the dashboard through web sockets events and communicates with the backend to provide a real-time user experience. Messages sent via the dashboard are transmitted to the backend and then relayed to the users.
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+In essence, this application is a custom-made WhatsApp dashboard working with the WhatsApp Cloud API, facilitating Body Culture's customers in transitioning their customer service from mobile phones to WhatsApp.
 
-## Recommended IDE Setup
+The production version includes a permission system, allowing fault-tolerance and distinguishing between admin users and regular users. This means not everyone can read all messages or send messages. Additionally, the production version has an implementation for sending WhatsApp templates with interactive buttons and integration with Google's Dialogflow chatbot AI.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## Technical Considerations
 
-## Need an official Svelte framework?
+The provided information also includes technical considerations for working with Svelte, TypeScript, and Vite. It highlights the rationale behind certain design choices and explains the use of different tools and configurations.
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+During the internship at IBM, the project focused on integrating a custom WhatsApp Chatbot using the Meta WhatsApp Cloud API. The work involved creating a fully functional WhatsApp Dashboard with Svelte and utilizing REST API and WebSockets for real-time message communication on the backend. Security was prioritized through the implementation of JWT authentication and AWS Cognito service for securing the API Gateway.
 
-## Technical considerations
+The success of the WhatsApp Chatbot was significant, as it gained widespread interest and saw substantial adoption, with over 4000 weekly downloads on NPM within the first two weeks of its release. The integration of Google's Dialogflow enabled the bot to use artificial intelligence to interact with users effectively, leading to improved conversion rates for new customer sign-ups. The transformation of customer service from traditional telephone communication to automated interactions via WhatsAppBot proved to be highly beneficial, with users finding it easy to share the WhatsApp business account with friends and handling all membership-related information with ease.
 
-**Why use this over SvelteKit?**
-
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
